@@ -15,6 +15,8 @@ import chalk from 'chalk'
 import { UserConfig, resolveConfig } from './config'
 
 function logHelp() {
+  const command = argv._[0]
+  const envModeDefaultValue = command === 'build' ? 'production' : 'development'
   console.log(`
 Usage: vite [command] [args] [--options]
 
@@ -37,6 +39,7 @@ Options:
   --sourcemap                [boolean] output source maps for build (default: false)
   --minify                   [boolean | 'terser' | 'esbuild'] enable/disable minification, or specify
                                        minifier to use. (default: 'terser')
+  --mode, -m                 [string]  specify env mode (default: ${envModeDefaultValue})
   --ssr                      [boolean] build for server-side rendering
   --jsx                      ['vue' | 'preact' | 'react']  choose jsx preset (default: 'vue')
   --jsx-factory              [string]  (default: React.createElement)
@@ -46,15 +49,18 @@ Options:
 
 console.log(chalk.cyan(`vite v${require('../package.json').version}`))
 ;(async () => {
-  if (argv.help || argv.h) {
+  const { help, h, mode, m, version, v } = argv
+
+  if (help || h) {
     logHelp()
     return
-  } else if (argv.version || argv.v) {
+  } else if (version || v) {
     // noop, already logged
     return
   }
 
-  const options = await resolveOptions()
+  const envMode = mode || m
+  const options = await resolveOptions(envMode)
   if (!options.command || options.command === 'serve') {
     runServe(options)
   } else if (options.command === 'build') {
@@ -67,7 +73,16 @@ console.log(chalk.cyan(`vite v${require('../package.json').version}`))
   }
 })()
 
-async function resolveOptions() {
+async function resolveOptions(mode?: string) {
+  // command
+  if (argv._[0]) {
+    argv.command = argv._[0]
+  }
+
+  // specify env mode
+  const isDev = !argv.command || argv.command === 'serve'
+  const envMode = mode || (isDev ? 'development' : 'production')
+
   // shorthand for serviceWorker option
   if (argv['sw']) {
     argv.serviceWorker = argv['sw']
@@ -88,17 +103,13 @@ async function resolveOptions() {
       argv[key] = true
     }
   })
-  // command
-  if (argv._[0]) {
-    argv.command = argv._[0]
-  }
+
   // normalize root
   // assumes all commands are in the form of `vite [command] [root]`
   if (argv._[1] && !argv.root) {
     argv.root = path.isAbsolute(argv._[1]) ? argv._[1] : path.resolve(argv._[1])
   }
-
-  const userConfig = await resolveConfig(argv.config || argv.c)
+  const userConfig = await resolveConfig(envMode, argv.config || argv.c)
   if (userConfig) {
     return {
       ...userConfig,

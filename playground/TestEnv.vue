@@ -19,6 +19,9 @@ export default {
       CUSTOMIZE_ENV_VARIABLE: process.env.CUSTOMIZE_ENV_VARIABLE,
       variableNames: Object.keys(process.env).join(",")
     }
+  },
+  mounted(){
+    console.log(process.env)
   }
 }
 </script>

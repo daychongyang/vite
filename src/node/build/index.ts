@@ -129,7 +129,7 @@ export async function createBaseRollupPlugins(
  * Bundles the app for production.
  * Returns a Promise containing the build result.
  */
-export async function build(options: BuildConfig = {}): Promise<BuildResult> {
+export async function build(options: BuildConfig): Promise<BuildResult> {
   if (options.ssr) {
     return ssrBuild({
       ...options,
@@ -138,7 +138,6 @@ export async function build(options: BuildConfig = {}): Promise<BuildResult> {
   }
 
   const isTest = process.env.NODE_ENV === 'test'
-  process.env.NODE_ENV = 'production'
   const start = Date.now()
 
   const {
@@ -160,8 +159,11 @@ export async function build(options: BuildConfig = {}): Promise<BuildResult> {
     silent = false,
     sourcemap = false,
     shouldPreload = null,
-    env = {}
+    env = {},
+    mode
   } = options
+
+  process.env.NODE_ENV = mode
 
   let spinner: Ora | undefined
   const msg = 'Building for production...'
@@ -216,7 +218,7 @@ export async function build(options: BuildConfig = {}): Promise<BuildResult> {
         {
           'process.env': `(${JSON.stringify({
             ...env,
-            NODE_ENV: 'production'
+            NODE_ENV: mode
           })})`,
           __DEV__: 'false',
           __BASE__: JSON.stringify(publicBasePath)
@@ -355,9 +357,7 @@ export async function build(options: BuildConfig = {}): Promise<BuildResult> {
  * - Imports to dependencies are compiled into require() calls
  * - Templates are compiled with SSR specific optimizations.
  */
-export async function ssrBuild(
-  options: BuildConfig = {}
-): Promise<BuildResult> {
+export async function ssrBuild(options: BuildConfig): Promise<BuildResult> {
   const {
     rollupInputOptions,
     rollupOutputOptions,
