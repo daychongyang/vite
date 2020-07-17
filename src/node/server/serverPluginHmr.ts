@@ -75,6 +75,7 @@ export const hmrPlugin: ServerPlugin = ({
   resolver,
   config
 }) => {
+  const { verbose } = config
   const hmrClient = fs
     .readFileSync(hmrClientFilePath, 'utf-8')
     .replace(`__SW_ENABLED__`, String(!!config.serviceWorker))
@@ -165,10 +166,14 @@ export const hmrPlugin: ServerPlugin = ({
         const boundaries = [...hmrBoundaries]
         const file =
           boundaries.length === 1 ? boundaries[0] : `${boundaries.length} files`
-        console.log(
-          chalk.green(`[vite:hmr] `) +
-            `${file} hot updated due to change in ${relativeFile}.`
-        )
+
+        if (verbose) {
+          console.log(
+            chalk.green(`[vite:hmr] `) +
+              `${file} hot updated due to change in ${relativeFile}.`
+          )
+        }
+
         send({
           type: 'multi',
           updates: boundaries.map((boundary) => {

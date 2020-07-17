@@ -10,7 +10,7 @@
   <TestCssModules />
   <TestCssAtImport />
   <TestPreprocessors />
-  <TestScssAtImport/>
+  <TestScssAtImport />
   <TestAssets />
   <TestSrcImport />
   <TestJsonImport />
@@ -21,7 +21,7 @@
   <TestRewriteOptimized />
   <TestCustomBlocks />
   <TestOptimizeLink />
-  <TestRewriteUnoptimized />
+  <TestRewriteUnoptimized >
   <TestNormalizePublicPath />
   <TestDynamicImport />
   <TestWebWorker />

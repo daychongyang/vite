@@ -19,7 +19,14 @@ import { hmrClientPublicPath } from './serverPluginHmr'
 
 export const debugCSS = require('debug')('vite:css')
 
-export const cssPlugin: ServerPlugin = ({ root, app, watcher, resolver }) => {
+export const cssPlugin: ServerPlugin = ({
+  root,
+  app,
+  watcher,
+  resolver,
+  config
+}) => {
+  const { verbose } = config
   app.use(async (ctx, next) => {
     await next()
     // handle .css imports
@@ -91,7 +98,11 @@ export const cssPlugin: ServerPlugin = ({ root, app, watcher, resolver }) => {
     const publicPath = cleanUrl(styleImport)
     const index = qs.parse(styleImport.split('?', 2)[1]).index
     const path = `${publicPath}?type=style&index=${index}`
-    console.log(chalk.green(`[vite:hmr] `) + `${publicPath} updated. (style)`)
+
+    if (verbose) {
+      console.log(chalk.green(`[vite:hmr] `) + `${publicPath} updated. (style)`)
+    }
+
     watcher.send({
       type: 'style-update',
       path,

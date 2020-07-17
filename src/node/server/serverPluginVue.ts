@@ -67,6 +67,7 @@ export const vuePlugin: ServerPlugin = ({
   watcher,
   config
 }) => {
+  const { verbose } = config
   const etagCacheCheck = (ctx: Context) => {
     ctx.etag = getEtag(ctx.body)
     // only add 304 tag check if not using service worker to cache user code
@@ -216,10 +217,12 @@ export const vuePlugin: ServerPlugin = ({
         changeSrcPath: publicPath,
         timestamp
       })
-      console.log(
-        chalk.green(`[vite:hmr] `) +
-          `${path.relative(root, filePath)} updated. (reload)`
-      )
+      if (verbose) {
+        console.log(
+          chalk.green(`[vite:hmr] `) +
+            `${path.relative(root, filePath)} updated. (reload)`
+        )
+      }
     }
 
     if (
@@ -320,7 +323,7 @@ export const vuePlugin: ServerPlugin = ({
     if (didUpdateStyle) {
       updateType.push(`style`)
     }
-    if (updateType.length) {
+    if (verbose && updateType.length) {
       console.log(
         chalk.green(`[vite:hmr] `) +
           `${path.relative(root, filePath)} updated. (${updateType.join(

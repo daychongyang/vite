@@ -22,7 +22,8 @@ const config: UserConfig = {
         'preprocess-custom-color': 'green'
       }
     }
-  }
+  },
+  verbose: false
 }
 
 export default config

@@ -137,6 +137,10 @@ export interface SharedConfig {
    * @default true
    */
   enableEsbuild?: boolean
+  /**
+   * Whether to output detailed information on the terminal.
+   */
+  verbose?: boolean
 }
 
 export interface ServerConfig extends SharedConfig {
