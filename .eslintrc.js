@@ -68,9 +68,22 @@ module.exports = {
       }
     },
     {
+      files: ['scripts/**'],
+      rules: {
+        'node/no-extraneous-require': 'off',
+        'node/no-restricted-require': 'off'
+      }
+    },
+    {
       files: ['packages/create-app/template-*/**'],
       rules: {
         'node/no-missing-import': 'off'
+      }
+    },
+    {
+      files: ['packages/create-app/**'],
+      rules: {
+        'node/no-restricted-require': 'off'
       }
     }
   ]
